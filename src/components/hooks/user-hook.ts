@@ -6,6 +6,7 @@ export const UserHook = () => {
   const meQuery = createQuery(() => ({
     queryKey: ["me"],
     queryFn: async () => handleEden(await rpc.api.user.me.get()),
+    deferStream: true,
   }));
 
   return {
