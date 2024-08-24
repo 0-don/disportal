@@ -6,7 +6,8 @@ export const route = {
   async load({ location }) {
     const navigate = useNavigate();
     const me = await rpc.api.user.me.get();
-    if (me.error) navigate("/auth/login", { replace: true });
+    if (me.error && !location.pathname.includes("logout"))
+      navigate("/auth/login", { replace: true });
   },
 } satisfies RouteDefinition;
 

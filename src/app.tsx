@@ -6,14 +6,10 @@ import { Providers } from "./providers";
 
 export default function App() {
   return (
-    <Router
-      root={(props) => (
-        <Suspense>
-          <Providers>{props.children}</Providers>
-        </Suspense>
-      )}
-    >
-      <FileRoutes />
-    </Router>
+    <Providers>
+      <Router root={(props) => <Suspense>{props.children}</Suspense>}>
+        <FileRoutes />
+      </Router>
+    </Providers>
   );
 }
