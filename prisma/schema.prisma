@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(cuid())
+
+  username String @unique
+  password String
+}
+
+model Server {
+  id       Int    @id @default(autoincrement())
+  serverId String @unique
+
+  broken Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile ServerProfile?
+  reviews ServerReview[]
+  tags    ServerTag[]
+}
+
+model ServerProfile {
+  id          Int    @id @default(autoincrement())
+  name        String
+  category    String
+  description String
+  logo        String
+  inviteLink  String
+
+  languageCode String?
+
+  newServer     Boolean @default(false)
+  nsfw          Boolean @default(false)
+  onlineMembers Int
+  totalMembers  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serverId String @unique
+  server   Server @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+}
+
+model ServerTag {
+  serverId String
+  tagId    Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  server Server @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([serverId, tagId])
+}
+
+model ServerReview {
+  id Int @id @default(autoincrement())
+
+  serverId String
+  userId   String
+  username String
+
+  title      String
+  comment    String
+  rating     Int
+  thumbsUp   Int
+  thumbsDown Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  server Server @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+
+  @@unique([userId, serverId])
+}
+
+model Tag {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  serverCount Int    @default(0)
+  serverFound Int    @default(0)
+
+  runner String?
+
+  used Boolean @default(false)
+
+  language String?
+  category String?
+  page     Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serverTags ServerTag[]
+}
